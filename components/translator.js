@@ -48,21 +48,24 @@ class Translator {
 
     replaceWords(text, dictionary, isTitle = false) {
         for (const [key, value] of Object.entries(dictionary)) {
-            let re;
+          const escapedKey = escapeRegex(key);
 
-            if(isTitle) {
-                re = new RegExp(`${escapeRegex(key)}`, 'gi');
-            } else {
-                re = new RegExp(`\\b${escapeRegex(key)}\\b`, 'gi');
-            }
+          const re = new RegExp(`(?<!\\w)${escapedKey}(?!\\w)`, 'gi');
 
-            text = text.replace(re, (match) => {
-                const replacement = isTitle ? this.capitalize(value) : value;
-                return `<span class="highlight">${replacement}</span>`;
-            });
+          if (text.includes(`<span class="highlight">${value}</span>`)) {
+            continue;
+          }
+      
+          text = text.replace(re, (match) => {
+            let replacement = isTitle || /^[A-Z]/.test(match)
+              ? this.capitalize(value)
+              : value;
+      
+            return `<span class="highlight">${replacement}</span>`;
+          });
         }
         return text;
-    }
+      }
 
     capitalize(word) {
         return word.charAt(0).toUpperCase() + word.slice(1);
