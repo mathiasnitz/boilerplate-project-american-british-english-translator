@@ -71,7 +71,7 @@ suite('Functional Tests', () => {
           .send({ text: "Hello!", locale: "american-to-british" })
           .end((err, res) => {
             assert.equal(res.status, 200);
-            assert.deepEqual(res.body, { translation: "Everything looks good to me!" });
+            assert.deepEqual(res.body, { text: "Hello!", translation: "Everything looks good to me!" });
             done();
           });
       });
