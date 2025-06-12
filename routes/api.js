@@ -15,12 +15,14 @@ module.exports = function (app) {
         return res.json({ error: "No text to translate" });
       }
 
+      console.log("locale: " + locale);
 
-      console.log(text);
-      const translation = translator.translate(text, locale);
-
+      if (locale !== "american-to-british" && locale !== "british-to-american"){
+        return res.json({ error: "Invalid value for locale field" });
+      } else  {
+        const translation = translator.translate(text, locale);
+        res.json({ translation });
+      }
       
-
-      res.json({ translation });
     });
 };

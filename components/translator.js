@@ -27,9 +27,61 @@ class Translator {
             translation = this.replaceWords(translation, this.britishToAmericanTitles, true);
         }
 
-        return translation;
+        if(locale === 'american-to-british') {
+            translation = translation.replace(/\b(\d{1,2}):(\d{2})\b/g, (match, h, m) => {
+                return `<span class="highlight">${h}.${m}</span>`;
+            });
+        } else if(locale === 'british-to-american') {
+            translation = translation.replace(/\b(\d{1,2})\.(\d{2})\b/g, (match, h, m) => {
+                return `<span class="highlight">${h}:${m}</span>`;
+            });
+        }
+
+        if(text === translation){
+            return "Everything looks good to me!";
+        } else {
+            return translation;
+        }
+
+        
     }
 
+    replaceWords(text, dictionary, isTitle = false) {
+        for (const [key, value] of Object.entries(dictionary)) {
+            let re;
+
+            if(isTitle) {
+                re = new RegExp(`${escapeRegex(key)}`, 'gi');
+            } else {
+                re = new RegExp(`\\b${escapeRegex(key)}\\b`, 'gi');
+            }
+
+            text = text.replace(re, (match) => {
+                const replacement = isTitle ? this.capitalize(value) : value;
+                return `<span class="highlight">${replacement}</span>`;
+            });
+        }
+        return text;
+    }
+
+    capitalize(word) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }
+
+}
+
+function escapeRegex(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function invertDict(obj){
+    const inverted = {};
+    for(const key in obj) {
+        if(obj.hasOwnProperty(key)) {
+            inverted[obj[key]] = key;
+        }
+    }
+    return inverted;
 }
 
 module.exports = Translator;
